@@ -7,12 +7,35 @@ machine:
         ANDROID_HOME: /usr/local/android-sdk-linux
 
 dependencies:
-    override:
-        - echo "y" | android update sdk --no-ui --all --filter tools,platform-tools,build-tools-25.0.1,android-25,extra-google-m2repository,extra-google-google_play_services,extra-android-support
-        - chmod +x gradlew
-        - ANDROID_HOME=/usr/local/android-sdk-linux ./gradlew dependencies
+    pre:
+        - echo y | android update sdk --no-ui --all --filter "com.lanna.android.samples"
+#    override:
+#        - echo "y" | android update sdk --no-ui --all --filter tools,platform-tools,build-tools-25.0.1,android-25,extra-google-m2repository,extra-google-google_play_services,extra-android-support
+#        - chmod +x gradlew
+#        - ANDROID_HOME=/usr/local/android-sdk-linux ./gradlew dependencies
+
 
 test:
     override:
-        - (./gradlew assemble):
-            timeout: 360
+        - ./gradlew test
+        # start the emulator
+        - emulator -avd circleci-android22 -no-audio -no-window:
+            background: true
+            parallel: true
+        # wait for it to have booted
+        - circle-android wait-for-boot
+        # run tests  against the emulator.
+        - ./gradlew connectedAndroidTest
+        # copy the build outputs to artifacts
+        - cp -r my-project/build/outputs $CIRCLE_ARTIFACTS
+        # copy the test results to the test results directory.
+        - cp -r my-project/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
+
+        #- cp -r AndroidSamples/build/outputs $CIRCLE_ARTIFACTS
+        #- adb install AndroidSamples/build/outputs/apk/app-release.apk
+
+    pre:
+        - emulator -avd circleci-android22 -no-audio -no-window:
+            background: true
+            parallel: true
+        - circle-android wait-for-boot
