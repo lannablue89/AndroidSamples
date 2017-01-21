@@ -4,7 +4,9 @@
 
 machine:
     environment:
-        GRADLE_OPTS: -Xmx512m
+        - chmod +x gradlew
+        ANDROID_HOME: /usr/local/android-sdk-linux ./gradlew dependencies
+        GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
 
 dependencies:
     pre:
@@ -19,9 +21,6 @@ dependencies:
         - echo y | android update sdk --no-ui --all --filter "platform-tools, tools"
         - echo y | android update sdk --no-ui --all --filter "extra-android-support"
         #,sys-img-armeabi-v7a-android-21,extra-google-google_play_services,extra-google-m2repository
-
-        - chmod +x gradlew
-        - ANDROID_HOME= /usr/local/android-sdk-linux ./gradlew dependencies
 
         - echo n | android create avd -n testing -f -t android-22
 
