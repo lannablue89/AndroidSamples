@@ -9,6 +9,7 @@ machine:
 
 dependencies:
     pre:
+        - wget "https://services.gradle.org/distributions/gradle-2.14.1-all.zip"; unzip gradle-2.14.1-all.zip
         - if [ ! -d "/usr/local/android-sdk-linux/platforms/android-22" ]; then echo y | android update sdk --no-ui --all --filter "android-22"; fi
         - if [ ! -d "/usr/local/android-sdk-linux/build-tools/25.0.2" ]; then echo y | android update sdk --no-ui --all --filter "build-tools-25.0.2"; fi
         - if [ ! -d "/usr/local/android-sdk-linux/extras/android/m2repository/com/android/support/design/25.0.0" ]; then echo y | android update sdk --no-ui --all --filter "extra-android-m2repository"; fi
@@ -17,6 +18,11 @@ dependencies:
         - echo y | android update sdk --no-ui --all --filter "extra-android-support"
         #,sys-img-armeabi-v7a-android-21,extra-google-google_play_services,extra-google-m2repository
         - echo n | android create avd -n testing -f -t android-22
+
+    cache_directories:
+        - /usr/local/android-sdk-linux/platforms/android-22
+        - /usr/local/android-sdk-linux/build-tools/25.0.2
+        - /usr/local/android-sdk-linux/extras/android/m2repository
 
 
 #    override:
@@ -31,9 +37,14 @@ test:
         - $ANDROID_HOME/tools/emulator -avd testing -no-window -no-boot-anim -no-audio:
             background: true
             parallel: true
+
         - ./gradlew assembleDebug
         - bin/android-wait-for-emulator
         - bin/run-tests test.namespace
+
+#        # run infer
+#        - ./gradlew clean
+#        - infer -i -- ./gradlew build
 #        # wait for it to have booted
 #        - circle-android wait-for-boot
 #        # run tests  against the emulator.
@@ -43,8 +54,8 @@ test:
 #        # copy the test results to the test results directory.
 #        - cp -r my-project/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
 
-        #- cp -r AndroidSamples/build/outputs $CIRCLE_ARTIFACTS
-        #- adb install AndroidSamples/build/outputs/apk/app-release.apk
+#        - cp -r AndroidSamples/build/outputs $CIRCLE_ARTIFACTS
+#        - adb install AndroidSamples/build/outputs/apk/app-release.apk
 
     pre:
         - emulator -avd circleci-android22 -no-audio -no-window:
