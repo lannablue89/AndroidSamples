@@ -9,7 +9,7 @@ machine:
 
 dependencies:
     pre:
-        - wget "https://services.gradle.org/distributions/gradle-2.14.1-all.zip"; unzip gradle-2.14.1-all.zip
+        - wget "https://services.gradle.org/distributions/gradle-2.14.1-bin.zip"; unzip gradle-2.14.1-bin.zip
         - if [ ! -d "/usr/local/android-sdk-linux/platforms/android-22" ]; then echo y | android update sdk --no-ui --all --filter "android-22"; fi
         - if [ ! -d "/usr/local/android-sdk-linux/build-tools/25.0.2" ]; then echo y | android update sdk --no-ui --all --filter "build-tools-25.0.2"; fi
         - if [ ! -d "/usr/local/android-sdk-linux/extras/android/m2repository/com/android/support/design/25.0.0" ]; then echo y | android update sdk --no-ui --all --filter "extra-android-m2repository"; fi
