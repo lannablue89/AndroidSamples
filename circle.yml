@@ -4,18 +4,14 @@
 
 machine:
     environment:
-#        PATH: "~/$CIRCLE_PROJECT_REPONAME/gradle-2.14.1/bin:$PATH"
-        ANDROID_HOME: /usr/local/android-sdk-linux ./gradlew dependencies
         GRADLE_OPTS: -Xmx512m
 
 dependencies:
     pre:
-        - chmod +x gradlew
         - sudo add-apt-repository ppa:cwchien/gradle -y
         - sudo apt-get update
         - sudo apt-get install gradle-2.14.1
 
-#        - wget "https://services.gradle.org/distributions/gradle-2.14.1-bin.zip"; unzip gradle-2.14.1-bin.zip
         - if [ ! -d "/usr/local/android-sdk-linux/platforms/android-22" ]; then echo y | android update sdk --no-ui --all --filter "android-22"; fi
         - if [ ! -d "/usr/local/android-sdk-linux/build-tools/25.0.2" ]; then echo y | android update sdk --no-ui --all --filter "build-tools-25.0.2"; fi
         - if [ ! -d "/usr/local/android-sdk-linux/extras/android/m2repository/com/android/support/design/25.0.0" ]; then echo y | android update sdk --no-ui --all --filter "extra-android-m2repository"; fi
@@ -23,6 +19,10 @@ dependencies:
         - echo y | android update sdk --no-ui --all --filter "platform-tools, tools"
         - echo y | android update sdk --no-ui --all --filter "extra-android-support"
         #,sys-img-armeabi-v7a-android-21,extra-google-google_play_services,extra-google-m2repository
+
+        - chmod +x gradlew
+        - ANDROID_HOME= /usr/local/android-sdk-linux ./gradlew dependencies
+
         - echo n | android create avd -n testing -f -t android-22
 
     cache_directories:
