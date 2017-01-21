@@ -45,8 +45,8 @@ test:
             parallel: true
 
         - ./gradlew assembleDebug
-        - bin/android-wait-for-emulator
-        - bin/run-tests test.namespace
+#        - bin/android-wait-for-emulator
+#        - bin/run-tests test.namespace
 
 #        # run infer
 #        - ./gradlew clean
