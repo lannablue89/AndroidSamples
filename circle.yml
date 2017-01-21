@@ -5,10 +5,13 @@
 machine:
     environment:
         ANDROID_HOME: /usr/local/android-sdk-linux
+        GRADLE_OPTS: -Xmx512m
 
 dependencies:
-    pre:
-        - echo y | android update sdk --no-ui --all --filter "package-name"
+    pos:
+        - echo y | android update sdk --no-ui --all --filter "platform-tools,build-tools-25.0.2,android-25,sys-img-armeabi-v7a-android-21,extra-android-support,extra-google-google_play_services,extra-google-m2repository,extra-android-m2repository"
+        - echo n | android create avd -n testing -f -t android-23
+
 #    override:
 #        - echo "y" | android update sdk --no-ui --all --filter tools,platform-tools,build-tools-25.0.1,android-25,extra-google-m2repository,extra-google-google_play_services,extra-android-support
 #        - chmod +x gradlew
@@ -17,19 +20,21 @@ dependencies:
 
 test:
     override:
-        - ./gradlew test
         # start the emulator
-        - emulator -avd circleci-android22 -no-audio -no-window:
+        - $ANDROID_HOME/tools/emulator -avd testing -no-window -no-boot-anim -no-audio:
             background: true
             parallel: true
-        # wait for it to have booted
-        - circle-android wait-for-boot
-        # run tests  against the emulator.
-        - ./gradlew connectedAndroidTest
-        # copy the build outputs to artifacts
-        - cp -r my-project/build/outputs $CIRCLE_ARTIFACTS
-        # copy the test results to the test results directory.
-        - cp -r my-project/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
+        - ./gradlew assembleDebug
+        - bin/android-wait-for-emulator
+        - bin/run-tests test.namespace
+#        # wait for it to have booted
+#        - circle-android wait-for-boot
+#        # run tests  against the emulator.
+#        - ./gradlew connectedAndroidTest
+#        # copy the build outputs to artifacts
+#        - cp -r my-project/build/outputs $CIRCLE_ARTIFACTS
+#        # copy the test results to the test results directory.
+#        - cp -r my-project/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
 
         #- cp -r AndroidSamples/build/outputs $CIRCLE_ARTIFACTS
         #- adb install AndroidSamples/build/outputs/apk/app-release.apk
