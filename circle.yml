@@ -5,11 +5,12 @@
 machine:
     environment:
 #        PATH: "~/$CIRCLE_PROJECT_REPONAME/gradle-2.14.1/bin:$PATH"
-        ANDROID_HOME: /usr/local/android-sdk-linux
+        ANDROID_HOME: /usr/local/android-sdk-linux ./gradlew dependencies
         GRADLE_OPTS: -Xmx512m
 
 dependencies:
     pre:
+        - chmod +x gradlew
         - sudo add-apt-repository ppa:cwchien/gradle -y
         - sudo apt-get update
         - sudo apt-get install gradle-2.14.1
